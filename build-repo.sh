@@ -38,7 +38,7 @@ for suite in "${!suites[@]}"; do
 
   gpg --batch --yes --pinentry-mode loopback \
     --passphrase "$GPG_PASSPHRASE" \
-    --abs -o Release.gpg Release
+    -abs -o Release.gpg Release
   gpg --batch --yes --pinentry-mode loopback \
     --passphrase "$GPG_PASSPHRASE" \
     --clearsign -o InRelease Release
