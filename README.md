@@ -6,6 +6,35 @@ This is an experimental repository intended host custom Debian packages. The pac
 
 Packages from the APT repository will be used to build SpamTagger images using the [SpamTagger-Bootc](https://github.com/SpamTagger/SpamTagger-Bootc) project, and the latest version of each package will be available via a `bootc upgrade` to the latest image. Unless you are trying to run to manually install SpamTagger in an unsupported environment, you should need to know anything about this project.
 
-## 🚧 Under Construction 🚧
+## 🔧 Manual Usage 🔧
 
-This project is a work-in-progress and doesn't currently do any of the things claimed in the About section. Bare with us...
+If you are interested in using these packages outside of an officially suppored Bootc environment, you can do so as follows (running as a regular user is assumed, you can drop all usages of `sudo` if you are running as `root`):
+
+Download and install the public GPG key:
+
+```
+curl -fsSL http://spamtagger.github.io/debs/spamtagger.key | \
+sudo gpg --dearmor -o /etc/apt/keyrings/spamtagger.gpg
+```
+
+Add this repository as a source to your Debian system at `/etc/apt/sources.list.d/spamtagger.sources`:
+
+```
+Types: deb
+URIs: http://spamtagger.github.io/debs
+Suites: stable
+Components: main
+Signed-By: /etc/apt/keyrings/spamtagger.gpg
+```
+
+Run an `apt-get update` to refresh your repository package listings:
+
+```
+sudo apt-get update
+```
+
+Install a package:
+
+```
+sudo apt-get install st-exim
+```

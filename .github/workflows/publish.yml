@@ -23,47 +23,15 @@ jobs:
           sudo apt-get install -y dpkg-dev gnupg curl jq
 
       - name: Import DEB GPG key
-        run: |
-          echo "$GPG_PRIVATE_KEY" | gpg --batch --import
+        run: echo "$GPG_PRIVATE_KEY" | gpg --batch --import
         env:
           GPG_PRIVATE_KEY: ${{ secrets.DEB_GPG_PRIVATE_KEY }}
 
       - name: Download latest .deb releases
-        run: |
-          mkdir -p pool/main
-          curl -s https://api.github.com/repos/SpamTagger/st-exim/releases \
-          | jq -r '.[].assets[].browser_download_url' \
-          | grep '\.deb$' \
-          | xargs -n1 wget -P pool/main
+        run: bash ./fetch-packages.sh
 
       - name: Generate Packages file
-        run: |
-          mkdir -p dists/stable/main/binary-amd64
-          dpkg-scanpackages pool /dev/null \
-            > dists/stable/main/binary-amd64/Packages
-          gzip -9c dists/stable/main/binary-amd64/Packages \
-            > dists/stable/main/binary-amd64/Packages.gz
-      - name: Create Release file
-        run: |
-          cd dists/stable
-          apt-ftparchive \
-          -o APT::FTPArchive::Release::Suite=stable \
-          -o APT::FTPArchive::Release::Codename=stable \
-          -o APT::FTPArchive::Release::Components=main \
-          -o APT::FTPArchive::Release::Architectures="amd64 arm64" \
-          release . > Release
-
-      - name: Sign Release
-        run: |
-          cd dists/stable
-          gpg --batch --yes --pinentry-mode loopback \
-              --passphrase "$GPG_PASSPHRASE" \
-              -abs -o Release.gpg Release
-          gpg --batch --yes --pinentry-mode loopback \
-              --passphrase "$GPG_PASSPHRASE" \
-              --clearsign -o InRelease Release
-        env:
-          GPG_PASSPHRASE: ${{ secrets.DEB_GPG_PASSPHRASE }}
+        run: bash ./build-repo.sh
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
