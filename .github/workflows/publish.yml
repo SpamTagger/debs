@@ -40,8 +40,9 @@ jobs:
         run: |
           mkdir -p dists/stable/main/binary-amd64
           dpkg-scanpackages pool /dev/null \
-            | gzip -9 > dists/stable/main/binary-amd64/Packages.gz
-
+            > dists/stable/main/binary-amd64/Packages
+          gzip -9c dists/stable/main/binary-amd64/Packages \
+            > dists/stable/main/binary-amd64/Packages.gz
       - name: Create Release file
         run: |
           cd dists/stable
@@ -58,6 +59,9 @@ jobs:
           gpg --batch --yes --pinentry-mode loopback \
               --passphrase "$GPG_PASSPHRASE" \
               -abs -o Release.gpg Release
+          gpg --batch --yes --pinentry-mode loopback \
+              --passphrase "$GPG_PASSPHRASE" \
+              --clearsign -o InRelease Release
         env:
           GPG_PASSPHRASE: ${{ secrets.DEB_GPG_PASSPHRASE }}
 
