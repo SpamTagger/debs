@@ -31,7 +31,7 @@ jobs:
         run: bash ./fetch-packages.sh
 
       - name: Generate Packages file
-        run: bash ./build-repo.sh
+        run: GPG_PRIVATE_KEY=$GPG_PRIVATE_KEY bash ./build-repo.sh
         env:
           GPG_PRIVATE_KEY: ${{ secrets.DEB_GPG_PRIVATE_KEY }}
 
