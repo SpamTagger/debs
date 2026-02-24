@@ -32,6 +32,8 @@ jobs:
 
       - name: Generate Packages file
         run: bash ./build-repo.sh
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.DEB_GPG_PRIVATE_KEY }}
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
