@@ -49,7 +49,7 @@ jobs:
           -o APT::FTPArchive::Release::Suite=stable \
           -o APT::FTPArchive::Release::Codename=stable \
           -o APT::FTPArchive::Release::Components=main \
-          -o APT::FTPArchive::Release::Architectures="amd64 arm64 \
+          -o APT::FTPArchive::Release::Architectures="amd64 arm64" \
           release . > Release
 
       - name: Sign Release
