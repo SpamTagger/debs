@@ -45,7 +45,12 @@ jobs:
       - name: Create Release file
         run: |
           cd dists/stable
-          apt-ftparchive release . > Release
+          apt-ftparchive \
+          -o APT::FTPArchive::Release::Suite=stable \
+          -o APT::FTPArchive::Release::Codename=stable \
+          -o APT::FTPArchive::Release::Components=main \
+          -o APT::FTPArchive::Release::Architectures="amd64 arm64 \
+          release . > Release
 
       - name: Sign Release
         run: |
