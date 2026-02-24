@@ -1,0 +1,9 @@
+name: External trigger
+
+on:
+  repository_dispatch:
+    types: [package-release]
+
+jobs:
+  run:
+    uses: ./.github/workflows/publish.yml
