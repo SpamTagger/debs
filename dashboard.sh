@@ -4,35 +4,40 @@ set -e
 
 function recursive_directory() {
   local path=$1
-  echo "Starting $path"
   last=$(echo $path | sed -r 's/(.*)\/[^\/]*/\1/')
   cat >${path}.html <<EOF
 $HTML_HEAD
 <h1>Index of $path</h1>
+<table>
+  <tr><th>Name</th><th>Last modified</th><th>size/th></tr>
 EOF
+  modified=''
+  size='-'
   [[ ! -d $last ]] && mkdir -p $last
   if grep -qv "/" <<<$(echo $path); then
-    echo "Adding parent: <ul><li><a href='/browse.html'>..</a></li> >> ${path}.html"
-    echo "<ul><li><a href='/browse.html'>..</a><li>" >> ${path}.html
+    echo "<tr><td>📂<a href='/browse.html'>..</a></td><td>$modified</td><td>$size</td></tr>" >> ${path}.html
   else
-    echo "Adding parent: <ul><li><a href='/${last}.html'>..</a></li> >> ${path}.html"
-    echo "<ul><li><a href='/${last}.html'>..</a><li>" >> ${path}.html
+    echo "<tr><td>📂<a href='/${last}.html'>..</a></td><td>$modified</td><td>$size</td></tr>" >> ${path}.html
   fi
   for item in $(find $path -mindepth 1 -maxdepth 1 -type d); do
+    modified=$(stat $item --format=%y | cut -d'.' -f 1)
     next=$(echo $item | sed -r 's/.*\/([^\/]*)/\1/')
     [[ "$next" == "." ]] || [[ "$next" == ".." ]] || [[ "$next" =~ ".html$" ]] && continue
-    echo "Adding directory: <li><a href='/${item}.html'>$next/</a></li> >> ${path}.html"
-    echo "<li><a href='/${item}.html'>$next/</a></li>" >> ${path}.html
+    echo "<tr><td>📁<a href='/${item}.html'>$next/</a></td><td>$modified</td><td>$size</td></tr>" >> ${path}.html
     recursive_directory $item
   done
   for pkg in $(find $path -mindepth 1 -maxdepth 1 -type f); do
     [[ "$pkg" =~ .html$ ]] && continue
+    modified=$(stat $pkg --format=%y | cut -d'.' -f 1)
+    size=$(stat $pkg --format=%s | numfmt --to=iec)
     file=$(echo $pkg | sed -r 's/.*\/([^\/]*)/\1/')
-    echo "Adding file: <li><a href='/$pkg'>$file</a></li> >> ${path}.html"
-    echo "<li><a href='/$pkg'>$file</a></li>" >> ${path}.html
+    icon="📄"
+    [[ "$file" =~ .deb$ ]] && icon="📦"
+    [[ "$file" =~ .gpg$ ]] && icon="🔑"
+    [[ "$file" =~ .gz$ ]] && icon="🗄️"
+    echo "<tr><td>$icon<a href='/$pkg'>$file/</a></td><td>$modified</td><td>$size</td></tr>" >> ${path}.html
   done
-  echo "</ul></body>" >> ${path}.html
-  echo "Ending $path"
+  echo "</table></body>" >> ${path}.html
 }
 
 # Landing page with all stable packages
@@ -66,11 +71,12 @@ echo "</tr></table><p><a href='/browse.html'>Browse</a> full APT repository for 
 cat >browse.html <<EOF
 $HTML_HEAD
 <h1>SpamTagger APT Repo Index</h1>
-<ul><li><a href='/index.html'>..</a></li>
+<tr><td>📂<a href='/index.html'>..</a></td><td></td><td>-</td></tr>" >> ${path}.html
 EOF
 
 for i in dists pool snapshots; do
-  echo "<li><a href='/$i.html'>$i/</a></li>" >> browse.html
+  modified=$(stat $item --format=%y | cut -d'.' -f 1)
+  echo "<tr><td>📁<a href='/${i}.html'>$i/</a></td><td>$modified</td><td>-</td></tr>" >> ${path}.html
   recursive_directory $i
 done
-echo "</ul></body>" >> browse.html
+echo "</table></body>" >> browse.html
