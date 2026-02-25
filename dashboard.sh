@@ -63,8 +63,12 @@ for deb in pool/main/*.deb; do
 done
 echo "</tr></table><p><a href='/browse.html'>Browse</a> full APT repository for all package versions and snapshots.</p></body>" >> index.html
 
-echo "<h1>SpamTagger APT Repo Index</h1>" > browse.html
-echo "<ul><li><a href='/index.html'>..</a></li>" >> browse.html
+cat >browse.html <<EOF
+$HTML_HEAD
+<h1>SpamTagger APT Repo Index</h1>
+<ul><li><a href='/index.html'>..</a></li>
+EOF
+
 for i in dists pool snapshots; do
   echo "<li><a href='/$i.html'>$i/</a></li>" >> browse.html
   recursive_directory $i
