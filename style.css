@@ -1,0 +1,38 @@
+body {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  height: 100%;
+  min-width: 480px;
+  font-size: 12px;
+  font-family: 'AnonymicePro', 'Anonymous Pro', sans-serif;
+  line-height: 1.66;
+  word-wrap: break-word;
+  background: linear-gradient(3deg, rgba(21,207,253,0), rgba(21,207,253,1));
+  background-size: auto;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+p {
+  font-size: 1em;
+}
+
+a {
+  background-color: transparent;
+  -webkit-text-decoration-skip: objects;
+  color: #014A5D;
+  font-weight: bold;
+}
+
+a:hover {
+  color: #15CFFD;
+}
+
+a h1 {
+  color: #FFF;
+}
+
+a:hover {
+  text-decoration: underline;
+}
