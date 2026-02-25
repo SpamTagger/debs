@@ -12,10 +12,10 @@ $HTML_HEAD
 EOF
   [[ ! -d $last ]] && mkdir -p $last
   if grep -qv "/" <<<$(echo $path); then
-    echo "Adding parent: <ul><li><a href='/browse.html'>..</a><li> >> ${path}.html"
+    echo "Adding parent: <ul><li><a href='/browse.html'>..</a></li> >> ${path}.html"
     echo "<ul><li><a href='/browse.html'>..</a><li>" >> ${path}.html
   else
-    echo "Adding parent: <ul><li><a href='/${last}.html'>..</a><li> >> ${path}.html"
+    echo "Adding parent: <ul><li><a href='/${last}.html'>..</a></li> >> ${path}.html"
     echo "<ul><li><a href='/${last}.html'>..</a><li>" >> ${path}.html
   fi
   for item in $(find $path -mindepth 1 -maxdepth 1 -type d); do
@@ -64,9 +64,9 @@ done
 echo "</tr></table><p><a href='/browse.html'>Browse</a> full APT repository for all package versions and snapshots.</p></body>" >> index.html
 
 echo "<h1>SpamTagger APT Repo Index</h1>" > browse.html
-echo "<ul><li><a href='/index.html'>..</a><li>" >> browse.html
+echo "<ul><li><a href='/index.html'>..</a></li>" >> browse.html
 for i in dists pool snapshots; do
-  echo "<li><a href='/$i.html'>$i/</a><li>" >> browse.html
+  echo "<li><a href='/$i.html'>$i/</a></li>" >> browse.html
   recursive_directory $i
 done
 echo "</ul></body>" >> browse.html
