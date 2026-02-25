@@ -9,7 +9,7 @@ function recursive_directory() {
 $HTML_HEAD
 <h1>Index of $path</h1>
 <table>
-  <tr><th>Name</th><th>Last modified</th><th>size/th></tr>
+  <tr><th>Name</th><th>Last modified</th><th>size</th></tr>
 EOF
   modified=''
   size='-'
@@ -35,7 +35,7 @@ EOF
     [[ "$file" =~ .deb$ ]] && icon="📦"
     [[ "$file" =~ .gpg$ ]] && icon="🔑"
     [[ "$file" =~ .gz$ ]] && icon="🗄️"
-    echo "<tr><td>$icon<a href='/$pkg'>$file/</a></td><td>$modified</td><td>$size</td></tr>" >> ${path}.html
+    echo "<tr><td>$icon<a href='/$pkg'>$file</a></td><td>$modified</td><td>$size</td></tr>" >> ${path}.html
   done
   echo "</table></body>" >> ${path}.html
 }
@@ -71,7 +71,9 @@ echo "</tr></table><p><a href='/browse.html'>Browse</a> full APT repository for 
 cat >browse.html <<EOF
 $HTML_HEAD
 <h1>SpamTagger APT Repo Index</h1>
-<tr><td>📂<a href='/index.html'>..</a></td><td></td><td>-</td></tr>" >> ${path}.html
+<table>
+  <tr><th>Name</th><th>Last modified</th><th>size</th></tr>
+  <tr><td>📂<a href='/index.html'>..</a></td><td></td><td>-</td></tr>" >> ${path}.html
 EOF
 
 for i in dists pool snapshots; do
