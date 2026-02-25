@@ -22,7 +22,7 @@ EOF
     next=$(echo $item | sed -r 's/.*\/([^\/]*)/\1/')
     [[ "$next" == "." ]] || [[ "$next" == ".." ]] || [[ "$next" =~ ".html$" ]] && continue
     echo "Adding directory: <li><a href='/${item}.html'>$next/</a></li> >> ${path}.html"
-    echo "<li><a href='/${item}.html'>$next/</a></li>" >> ${item}.html
+    echo "<li><a href='/${item}.html'>$next/</a></li>" >> ${path}.html
     recursive_directory $item
   done
   for pkg in $(find $path -mindepth 1 -maxdepth 1 -type f); do
