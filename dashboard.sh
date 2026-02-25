@@ -2,6 +2,36 @@
 
 set -e
 
+function recursive_directory() {
+  local path=$1
+  echo "Starting $path"
+  last=$(echo $path | sed -r 's/(.*)\/[^\/]*/\1/')
+  [[ ! -d $last ]] && mkdir -p $last
+  if grep -qv "/" <<<$(echo $path); then
+    echo "Adding parent: <ul><li><a href='/browse.html'>..</a><li>"
+    echo "<ul><li><a href='/browse.html'>..</a><li>" >> ${path}.html
+  else
+    echo "Adding parent: <ul><li><a href='/${last}.html'>..</a><li>"
+    echo "<ul><li><a href='/${last}.html'>..</a><li>" >> ${path}.html
+  fi
+  echo "<h1>Index of $path</h1>" > ${path}.html
+  for item in $(find $path -mindepth 1 -maxdepth 1 -type d); do
+    next=$(echo $item | sed -r 's/.*\/([^\/]*)/\1/')
+    [[ "$next" == "." ]] || [[ "$next" == ".." ]] || [[ "$next" =~ ".html$" ]] && continue
+    echo "Adding directory: <li><a href='/${item}.html'>$next/</a></li>"
+    echo "<li><a href='/${item}.html'>$next/</a></li>" >> ${item}.html
+    recursive_directory $item
+  done
+  for pkg in $(find $path -mindepth 1 -maxdepth 1 -type f); do
+    [[ "$pkg" =~ .html$ ]] && continue
+    file=$(echo $pkg | sed -r 's/.*\/([^\/]*)/\1/')
+    echo "Adding file: <li><a href='/$pkg'>$file</a></li>"
+    echo "<li><a href='/$pkg'>$file</a></li>" >> ${path}.html
+  done
+  echo "</ul>" >> ${path}.html
+  echo "Ending $path"
+}
+
 # Landing page with all stable packages
 # TODO: Format into table for different releases/architectures
 
@@ -15,40 +45,12 @@ for deb in pool/main/*.deb; do
   arch=$(echo $deb | sed -r 's/.*_([^\.]*).deb/\1/')
   echo "<tr><td>$name</td><td>$rel</td><td>$ver</td><td>$arch</td><td><a href='https://debs.spamtagger.org/$deb'>download</a></td><td><a href='https://debs.spamtagger.org/$deb.sha256'>sha256</a></td></tr>" >> index.html
 done
+echo "</tr></table><p><a href='/browse.html'>Browse</a> full APT repository for all package versions and snapshots.</p>" >> index.html
 
-echo "</tr></table><p>Browse <a href='/dists.html'>current packages</a>, or <a href='/snapshots.html'>previous snapshots</a>" >> index.html
-
-echo "<ul><li><a href='/index.html'>..</a><li>" > dists.html
-for dist in $(find dists -mindepth 1 -maxdepth 1 -type d); do
-  next=$(echo $dist | cut -d '/' -f 2)
-  echo "<li><a href='${dist}.html'>$next/</a></li>" >> dists.html
-  echo "<ul><li><a href='/dists.html'>..</a><li>" > ${dist}.html
-  for pkg in $(find $dist -mindepth 1 -maxdepth 1 -type f); do
-    file=$(echo $pkg | cut -d '/' -f 3)
-    echo "<li><a href='${dist}/$file'>$file/</a></li>" >> ${dist}.html
-  done
-  echo "</ul>" >> ${dist}.html
+echo "<h1>SpamTagger APT Repo Index</h1>" > browse.html
+echo "<ul><li><a href='/index.html'>..</a><li>" >> browse.html
+for i in dists pool snapshots; do
+  echo "<ul><li><a href='/$i.html'>$i/</a><li>" >> browse.html
+  recursive_directory $i
 done
-echo "</ul>" >> dists.html
-
-echo "<ul><li><a href='/index.html'>..</a><li>" > snapshots.html
-if [ -e snapshots ]; then
-  for snapshot in $(find snapshots -mindepth 1 -maxdepth 1 -type d); do
-    next=$(echo $snapshot | cut -d '/' -f 2)
-    echo "<li><a href='${snapshot}.html'>$snapshot/</a></li>" >> snapshots.html
-    echo "<ul><li><a href='/snapshots.html'>..</a><li>" > ${snapshot}.html
-    for dist in $(find $snapshot -mindepth 1 -maxdepth 1 -type d); do
-      next=$(echo $dist | cut -d '/' -f 3)
-      echo "<li><a href='${dist}.html'>$next/</a></li>" >> ${snapshot}.html
-      echo "<ul><li><a href='/dists.html'>..</a><li>" > ${dist}.html
-      for pkg in $(find $dist -mindepth 1 -maxdepth 1 -type f); do
-        file=$(echo $pkg | cut -d '/' -f 4)
-        echo "<li><a href='${dist}/$file'>$file/</a></li>" >> ${dist}.html
-      done
-      echo "</ul>" >> ${dist}.html
-    done
-    echo "</ul>" >> ${snapshot}.html
-  done
-fi
-echo "</ul>" >> snapshots.html
-
+echo "</ul>" >> browse.html
