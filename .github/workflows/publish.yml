@@ -3,7 +3,7 @@ name: Publish APT repo
 on:
   workflow_dispatch:
   schedule:
-    - cron: "*/30 * * * *"
+    - cron: "0 6 1 * *"
 
 permissions:
   contents: write
@@ -36,6 +36,10 @@ jobs:
           GPG_PRIVATE_KEY: ${{ secrets.DEB_GPG_PRIVATE_KEY }}
           GPG_PASSPHRASE: ${{ secrets.DEB_GPG_PASSPHRASE }}
 
+      - name: Create dashboard
+        id: dashboard
+        run: bash ./dashboard.sh
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
@@ -58,7 +62,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
-      - name: Create dashboard
-        id: dashboard
-        run: bash ./dashboard.sh
