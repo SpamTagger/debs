@@ -2,6 +2,25 @@
 
 set -e
 
+################################################################################
+# Basic HTML page setup
+################################################################################
+
+HTML_HEAD='
+<html>
+  <head>
+    <title>SpamTagger APT Repository</title>
+    <meta charset="utf-8">
+    <link href="/style.css" rel="stylesheet">
+    <link href="/spamtagger-debs.svg" rel="image/svg+xml">
+  </head>
+  <body>
+'
+
+################################################################################
+# Recursive building of all directories under /dist, /pool, and /snapshots
+################################################################################
+
 function recursive_directory() {
   local path=$1
   last=$(echo $path | sed -r 's/(.*)\/[^\/]*/\1/')
@@ -40,19 +59,10 @@ EOF
   echo "</table></body>" >> ${path}.html
 }
 
-# Landing page with all stable packages
-# TODO: Format into table for different releases/architectures
+################################################################################
+# Main index.html page
+################################################################################
 
-HTML_HEAD='
-<html>
-  <head>
-    <title>SpamTagger APT Repository</title>
-    <meta charset="utf-8">
-    <link href="/style.css" rel="stylesheet">
-    <link href="/spamtagger-debs.svg" rel="image/svg+xml">
-  </head>
-  <body>
-'
 cat >index.html <<EOF
 $HTML_HEAD
 <h1>SpamTagger APT Repo Packages</h1>
@@ -68,17 +78,22 @@ for deb in pool/main/*.deb; do
 done
 echo "</tr></table><p><a href='/browse.html'>Browse</a> full APT repository for all package versions and snapshots.</p></body>" >> index.html
 
+################################################################################
+# Top-level browse.html page
+################################################################################
+
 cat >browse.html <<EOF
 $HTML_HEAD
 <h1>SpamTagger APT Repo Index</h1>
 <table>
   <tr><th>Name</th><th>Last modified</th><th>size</th></tr>
-  <tr><td>📂<a href='/index.html'>..</a></td><td></td><td>-</td></tr>" >> ${path}.html
+  <tr><td>📂<a href='/index.html'>..</a></td><td></td><td>-</td></tr>
 EOF
 
 for i in dists pool snapshots; do
   modified=$(stat $item --format=%y | cut -d'.' -f 1)
   echo "<tr><td>📁<a href='/${i}.html'>$i/</a></td><td>$modified</td><td>-</td></tr>" >> ${path}.html
+  # All recursive pages generated here
   recursive_directory $i
 done
 echo "</table></body>" >> browse.html
