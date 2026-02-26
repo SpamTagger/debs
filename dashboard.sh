@@ -68,13 +68,13 @@ $HTML_HEAD
 <h1>SpamTagger APT Repo Packages</h1>
 EOF
 
-echo "<table><tr><th>Package</th><th>Debian Release</th><th>Version</th><th>Architecture</th><th>Download</th><th>Checksum</th></tr>" >> index.html
+echo "<table><tr><th>Package</th><th>Debian Release</th><th>Version</th><th>Architecture</th><th>Download</th></tr>" >> index.html
 for deb in pool/main/*.deb; do
   name=$(echo $deb | sed -r 's/.*\/([^_]*).*/\1/')
   ver=$(echo $deb | sed -r 's/[^_]*_([^\+]*)\+.*/\1/')
   rel=$(echo $deb | sed -r 's/[^+]*\+([^_]*)_.*/\1/')
   arch=$(echo $deb | sed -r 's/.*_([^\.]*).deb/\1/')
-  echo "<tr><td>$name</td><td>$rel</td><td>$ver</td><td>$arch</td><td><a href='https://debs.spamtagger.org/$deb'>download</a></td><td><a href='https://debs.spamtagger.org/$deb.sha256'>sha256</a></td></tr>" >> index.html
+  echo "<tr><td>$name</td><td>$rel</td><td>$ver</td><td>$arch</td><td><a href='https://debs.spamtagger.org/$deb'>download</a></td></tr>" >> index.html
 done
 echo "</tr></table><p><a href='/browse.html'>Browse</a> full APT repository for all package versions and snapshots.</p></body>" >> index.html
 
