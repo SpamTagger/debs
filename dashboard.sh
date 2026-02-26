@@ -92,7 +92,7 @@ EOF
 
 for i in dists pool snapshots; do
   modified=$(stat $item --format=%y | cut -d'.' -f 1)
-  echo "<tr><td>📁<a href='/${i}.html'>$i/</a></td><td>$modified</td><td>-</td></tr>" >> ${path}.html
+  echo "<tr><td>📁<a href='/${i}.html'>$i/</a></td><td>$modified</td><td>-</td></tr>" >> browse.html
   # All recursive pages generated here
   recursive_directory $i
 done
