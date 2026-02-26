@@ -2,9 +2,9 @@
 
 ## 🧪 About 🧪
 
-This repository is used to host SpamTagger's custom Debian packages via GitHub Pages. Note that this repository does not build any packages, it merely sets up a repository to host them. The packages are built, bundled, signed and uploaded to the GitHub Packages page of their respective repositories.
+This project is used to host SpamTagger's custom Debian packages via [GitHub Pages](https://debs.spamtagger.org). Note that the packages are built, bundled, signed and uploaded to the GitHub Packages page of their respective repositories and this merely fetches the packages from there and assemples them into an APT-compatible repository.
 
-This projects is heavily reliant on GitHub Actions to assemble the repository, stage new packages, promote them to stable, rollback snapshots and maintain a web index of the files for easy browsing.
+This project is heavily reliant on GitHub Actions to assemble the repository, stage new packages, promote them to stable, rollback snapshots and maintain a web index of the files for easy browsing.
 
 New repository builds can be initialized in a few ways:
 
