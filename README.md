@@ -25,16 +25,16 @@ You can use these packages follows (running as a regular user is assumed, you ca
 Download and install the public GPG key:
 
 ```
-curl -fsSL http://spamtagger.github.io/debs/spamtagger.key | \
-sudo gpg --dearmor -o /etc/apt/keyrings/spamtagger.gpg
+curl https://raw.githubusercontent.com/SpamTagger/debs/refs/heads/main/spamtagger.key 2>/dev/null >/etc/apt/trusted.gpg.d/spamtagger.asc
+cat /etc/apt/trusted.gpg.d/spamtagger.asc | gpg --yes --dearmor -o /etc/apt/keyrings/spamtagger.gpg
 ```
 
 Add this repository as a source to your Debian system at `/etc/apt/sources.list.d/spamtagger.sources`:
 
 ```
 Types: deb
-URIs: http://spamtagger.github.io/debs
-Suites: stable
+URIs: https://debs.spamtagger.org/
+Suites: trixie
 Components: main
 Signed-By: /etc/apt/keyrings/spamtagger.gpg
 ```
