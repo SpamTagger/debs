@@ -19,10 +19,7 @@ for suite in "${!suites[@]}"; do
     dir="dists/$codename/main/binary-$arch"
     mkdir -p "$dir"
 
-    tmpdir=$(mktemp -d)
-    find pool -name "*_${arch}.deb" -exec cp {} "$tmpdir" \;
-    dpkg-scanpackages "$tmpdir" /dev/null > "$dir/Packages"
-    rm -rf "$tmpdir"
+    dpkg-scanpackages -a "$arch" pool /dev/null > "$dir/Packages"
 
     gzip -9c "$dir/Packages" > "$dir/Packages.gz"
   done
