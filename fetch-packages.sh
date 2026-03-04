@@ -3,7 +3,7 @@ set -euo pipefail
 
 # Load expected packages, architectures, releases
 source repo.conf
-ARCH=$(echo $ARCHES | sed 's/ /|/g')
+ARCH="$(echo $ARCHES | sed 's/ /|/g')|all"
 
 mkdir -p pool/main
 for entry in "${PACKAGES[@]}"; do
@@ -21,15 +21,7 @@ for entry in "${PACKAGES[@]}"; do
 
         file=$(basename "$url")
 
-	if grep -q "$NAME" <(printf "%s\n" "${UNIVERSAL[@]}"); then
-	  if [[ "$ARCH" == "amd64" ]]; then
-            arch=all
-          else
-	    continue
-	  fi
-        else
-          arch=$(echo "$file" | grep -oE "($ARCH)" || true)
-	fi
+        arch=$(echo "$file" | grep -oE "($ARCH)" || true)
 
         if [[ -z "$arch" ]]; then
           echo "Skipping unknown arch: $file"
@@ -37,10 +29,8 @@ for entry in "${PACKAGES[@]}"; do
         fi
 
         if grep -q "$NAME:$arch" <(printf "%s\n" "${OPTIONAL[@]}"); then
-	  echo "Attempting to get optional package: ${NAME}:${arch} from $url"
           wget -q -nc "$url" -P pool/main || true
         else
-	  echo "Attempting to get required package: ${NAME}:${arch} from $url"
           wget -q -nc "$url" -P pool/main
         fi
     done
