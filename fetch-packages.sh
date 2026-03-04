@@ -21,6 +21,14 @@ for entry in "${PACKAGES[@]}"; do
 
         file=$(basename "$url")
 
+        arch=''
+	if grep -q "$NAME" <(printf "%s\n" "${UNIVERSAL[@]}"); then
+	  if [[ "$ARCH" == "amd64" ]]; then
+            arch=all
+          else
+	    continue
+	  fi
+	fi
         arch=$(echo "$file" | grep -oE "($ARCH)" || true)
 
         if [[ -z "$arch" ]]; then
