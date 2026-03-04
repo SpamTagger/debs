@@ -37,8 +37,10 @@ for entry in "${PACKAGES[@]}"; do
         fi
 
         if grep -q "$NAME:$arch" <(printf "%s\n" "${OPTIONAL[@]}"); then
+	  echo "Attempting to get optional package: ${NAME}:${arch} from $url"
           wget -q -nc "$url" -P pool/main || true
         else
+	  echo "Attempting to get required package: ${NAME}:${arch} from $url"
           wget -q -nc "$url" -P pool/main
         fi
     done
