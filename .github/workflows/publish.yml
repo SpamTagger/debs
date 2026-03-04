@@ -1,7 +1,18 @@
 name: Publish APT repo
 
+run-name: >
+  Publish ${{ github.event.inputs.version || 'all' }}
+  from ${{ github.event.inputs.trigger-repo || 'manual' }}
+
 on:
   workflow_dispatch:
+    inputs:
+      trigger-repo:
+        required: false
+        type: string
+      version:
+        required: false
+        type: string
   schedule:
     - cron: "0 6 1 * *"
 
