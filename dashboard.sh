@@ -65,8 +65,21 @@ EOF
 
 cat >index.html <<EOF
 $HTML_HEAD
-<h1>SpamTagger APT Repo Packages</h1>
+<h1>SpamTagger APT Repo - Latest Packages</h1>
 EOF
+
+declare -A latest
+
+for deb in pool/main/*.deb; do
+  name=$(echo $deb | sed -r 's/.*\/([^_]*).*/\1/')
+  ver=$(echo $deb | sed -r 's/[^_]*_([^\+]*)\+.*/\1/')
+  rel=$(echo $deb | sed -r 's/[^+]*\+([^_]*)_.*/\1/')
+  key="$name|$rel"
+  if [[ -z ${latest[$key]} ]] ||
+    dpkg --compare-versions "$ver" gt "${latest[$key]}"; then
+    latest[$key]=$ver
+  fi
+done
 
 echo "<table><tr><th>Package</th><th>Debian Release</th><th>Version</th><th>Architecture</th><th>Download</th></tr>" >> index.html
 for deb in pool/main/*.deb; do
@@ -74,7 +87,10 @@ for deb in pool/main/*.deb; do
   ver=$(echo $deb | sed -r 's/[^_]*_([^\+]*)\+.*/\1/')
   rel=$(echo $deb | sed -r 's/[^+]*\+([^_]*)_.*/\1/')
   arch=$(echo $deb | sed -r 's/.*_([^\.]*).deb/\1/')
-  echo "<tr><td>$name</td><td>$rel</td><td>$ver</td><td>$arch</td><td><a href='https://debs.spamtagger.org/$deb'>download</a></td></tr>" >> index.html
+  key="$name|$rel"
+  if [[ "$ver" == "${latest[$key]}" ]]; then
+    echo "<tr><td>$name</td><td>$rel</td><td>$ver</td><td>$arch</td><td><a href='https://debs.spamtagger.org/$deb'>download</a></td></tr>" >> index.html
+  fi
 done
 echo "</tr></table><p><a href='/browse.html'>Browse</a> full APT repository for all package versions and snapshots.</p></body>" >> index.html
 
