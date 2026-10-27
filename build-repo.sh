@@ -19,7 +19,7 @@ for suite in "${!suites[@]}"; do
     dir="dists/$codename/main/binary-$arch"
     mkdir -p "$dir"
 
-    dpkg-scanpackages -a "$arch" pool /dev/null > "$dir/Packages"
+    dpkg-scanpackages -m -a "$arch" pool /dev/null > "$dir/Packages"
 
     gzip -9c "$dir/Packages" > "$dir/Packages.gz"
   done
