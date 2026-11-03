@@ -27,7 +27,7 @@ for suite in "${!suites[@]}"; do
   cd dists/$codename
 
   apt-ftparchive \
-    -o APT::FTPArchive::Release::Suite=$suite \
+    -o APT::FTPArchive::Release::Suite=$codename \
     -o APT::FTPArchive::Release::Codename=$codename \
     -o APT::FTPArchive::Release::Components=main \
     -o APT::FTPArchive::Release::Architectures="$ARCHES" \
