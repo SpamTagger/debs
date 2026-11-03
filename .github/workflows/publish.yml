@@ -38,6 +38,9 @@ jobs:
         env:
           GPG_PRIVATE_KEY: ${{ secrets.DEB_GPG_PRIVATE_KEY }}
 
+      - name: Snapshot existing .deb releases
+        run: bash ./snapshot.sh
+
       - name: Download latest .deb releases
         run: bash ./fetch-packages.sh
 
